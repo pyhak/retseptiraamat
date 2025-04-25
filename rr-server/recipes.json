@@ -34,8 +34,8 @@
         { "user": "Kirke", "value": "JAH" }
       ],
       "ingredients": [
-        { "name": "Nacho-krõpsud", "amount": "1", "unit": "pakend" },
-        { "name": "Salsa-kaste", "amount": "1", "unit": "purgike" },
+        { "name": "Nacho-krõpsud", "amount": "1", "unit": "pk" },
+        { "name": "Salsa-kaste", "amount": "1", "unit": "prk" },
         { "name": "Talisibul", "amount": "1", "unit": "tk" },
         { "name": "Riivitud juust", "amount": "200", "unit": "g" },
         { "name": "Tšillihelbed", "amount": "1", "unit": "tl" }

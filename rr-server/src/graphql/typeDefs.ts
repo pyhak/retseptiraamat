@@ -1,13 +1,6 @@
 import { gql } from 'graphql-tag';
 
 export const typeDefs = gql`
-    enum Category {
-    BREAKFAST
-    LUNCH
-    DINNER
-    SNACK
-    }
-
   enum RatingValue {
     JAH
     EI
@@ -20,45 +13,68 @@ export const typeDefs = gql`
   }
 
   type Ingredient {
-    name: String
-    amount: String
-    unit: String
+    name: String!
+    amount: String!
+    unit: String!
+    category: String!
+    sortID: Int!
   }
 
   type Recipe {
     title: String
     description: String
     tutorial: String
-    category: Category
+    category: String!
     serves: Int
     ingredients: [Ingredient]
     ratings: [Rating]
+    tags: [String]
+    createdAt: String
+    id: ID!
+  }
+
+  input RecipeInput {
+    title: String!
+    description: String!
+    tutorial: String!
+    serves: Int!
+    ingredients: [IngredientInput!]!
+    category: String!
+    tags: [String!]
   }
 
   input IngredientInput {
     name: String!
     amount: String!
     unit: String!
+    category: String!
+    sortID: Int!
   }
 
- input RecipeInput {
-    title: String!
-    description: String!
-    tutorial: String!
-    category: Category!
-    serves: Int!
-    ingredients: [IngredientInput!]!
+  type ShoppingListItem {
+    name: String!
+    totalAmount: Float!
+    unit: String!
+  }
+
+  input ShoppingListRecipeInput {
+    id: ID!
+    targetServes: Int!
   }
 
   type Query {
-  recipes(query: String, serves: Int): [Recipe]
-}
+    recipes(query: String, serves: Int): [Recipe]
+  }
 
-    type Mutation {
-        addRecipe(recipe: RecipeInput!): Recipe
-        updateRecipe(id: ID!, recipe: RecipeInput!): Recipe
-        deleteRecipe(id: ID!): String
-        addRating(title: String!, user: String!, value: RatingValue!): Recipe
-        updateRating(title: String!, user: String!, value: RatingValue!): Recipe
-    }
+  extend type Query {
+    shoppingList(recipes: [ShoppingListRecipeInput!]!): [ShoppingListItem!]!
+  }
+
+  type Mutation {
+    addRecipe(recipe: RecipeInput!): Recipe
+    updateRecipe(id: ID!, recipe: RecipeInput!): Recipe
+    deleteRecipe(id: ID!): String
+    addRating(title: String!, user: String!, value: RatingValue!): Recipe
+    updateRating(title: String!, user: String!, value: RatingValue!): Recipe
+  }
 `;

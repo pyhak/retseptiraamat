@@ -23,6 +23,7 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "graphql": "^16.10.0",
-    "graphql-tag": "^2.12.6"
+    "graphql-tag": "^2.12.6",
+    "uuid": "^11.1.0"
   }
 }
