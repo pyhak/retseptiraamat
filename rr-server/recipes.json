@@ -1,0 +1,45 @@
+[
+    {
+      "title": "Lihtne hakklihasupp",
+      "description": "Vähestest komponentidest koosnev hakklihasupp meeldib hästi ka lastele",
+      "tutorial": "Pruunista hakkliha pannil, lisa hakitud sibul ja küpseta kuni sibul on pehme. Lisa porgandid ja kartulid ning pruunista veel 5 minutit. Lisa vesi ja maitseained ning keeda kuni köögiviljad on pehmed.",
+      "category": "LUNCH",
+      "serves": 3,
+      "ratings": [
+        { "user": "Madis", "value": "JAH" },
+        { "user": "Liis", "value": "JAH" },
+        { "user": "Oliver", "value": "EI" },
+        { "user": "Tibu", "value": "JAH" },
+        { "user": "Kirke", "value": "JAH" }
+      ],
+      "ingredients": [
+        { "name": "Hakkliha", "amount": "500", "unit": "g" },
+        { "name": "Sibul", "amount": "1", "unit": "tk" },
+        { "name": "Porgand", "amount": "2", "unit": "tk" },
+        { "name": "Kartul", "amount": "2", "unit": "tk" },
+        { "name": "Vesi", "amount": "1", "unit": "l" }
+      ]
+    },
+    {
+      "title": "Lihtsad nachod",
+      "description": "Tex-Mex köögist pärit roog",
+      "tutorial": "Laota nacho-krõpsud ahjuplaadile, kalla peale salsa-kaste ning puista üle hakitud talisibulatega. Nüüd puista peale riivitud juust, maitseks veidi tšillihelbeid. Küpseta kuumas ahjus grillelemendi all umbes 3 minutit, kuni juust on sulanud. Serveeri hapukoore ja guacamolega.",
+      "category": "SNACK",
+      "serves": 4,
+      "ratings": [
+        { "user": "Madis", "value": "JAH" },
+        { "user": "Liis", "value": "JAH" },
+        { "user": "Oliver", "value": "JAH" },
+        { "user": "Tibu", "value": "JAH" },
+        { "user": "Kirke", "value": "JAH" }
+      ],
+      "ingredients": [
+        { "name": "Nacho-krõpsud", "amount": "1", "unit": "pakend" },
+        { "name": "Salsa-kaste", "amount": "1", "unit": "purgike" },
+        { "name": "Talisibul", "amount": "1", "unit": "tk" },
+        { "name": "Riivitud juust", "amount": "200", "unit": "g" },
+        { "name": "Tšillihelbed", "amount": "1", "unit": "tl" }
+      ]
+    }
+  ]
+  
