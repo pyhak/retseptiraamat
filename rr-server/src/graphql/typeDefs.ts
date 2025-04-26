@@ -66,15 +66,12 @@ export const typeDefs = gql`
     recipes(query: String, serves: Int): [Recipe]
   }
 
-  extend type Query {
-    shoppingList(recipes: [ShoppingListRecipeInput!]!): [ShoppingListItem!]!
-  }
-
   type Mutation {
     addRecipe(recipe: RecipeInput!): Recipe
     updateRecipe(id: ID!, recipe: RecipeInput!): Recipe
     deleteRecipe(id: ID!): String
     addRating(title: String!, user: String!, value: RatingValue!): Recipe
     updateRating(title: String!, user: String!, value: RatingValue!): Recipe
+    shoppingList(recipes: [ShoppingListRecipeInput!]!): [ShoppingListItem!]!
   }
 `;

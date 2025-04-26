@@ -4,9 +4,13 @@ export const unitConversion: Record<string, { base: string; factor: number }> = 
     kg: { base: 'g', factor: 1000 },
     ml: { base: 'ml', factor: 1 },
     l: { base: 'ml', factor: 1000 },
+    tk: { base: 'tk', factor: 1 },
+    prk: { base: 'prk', factor: 1 },
+    purk: { base: 'prk', factor: 1 },
+
   };
   
-  export type BaseUnit = 'g' | 'ml' | 'tk' | 'other';
+  export type BaseUnit = 'g' | 'ml' | 'tk' | 'prk' | 'other';
   
   export interface ConvertedAmount {
     baseAmount: number;
