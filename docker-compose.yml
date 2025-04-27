@@ -1,6 +1,6 @@
 services:
   elasticsearch:
-    image: elasticsearch:7.8.1
+    image: elasticsearch:8.18.0
     ports:
       - 9200:9200
     environment:
@@ -9,7 +9,7 @@ services:
       ELASTIC_PASSWORD: 'SAUFGK9bR2BoahCUbGSI'
       ES_JAVA_OPTS: '-Xmx2g -Xms2g'
   kibana:
-    image: kibana:7.8.1
+    image: kibana:8.18.0
     volumes:
       - ./kibana.yml:/usr/share/kibana/config/kibana.yml
     ports:
