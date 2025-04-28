@@ -46,14 +46,7 @@ import {
           Poenimekiri:
         </Typography>
   
-        <Button
-          variant="outlined"
-          onClick={handleDownload}
-          disabled={shoppingList.length === 0}
-          sx={{ mb: 2 }}
-        >
-          Lae alla Microsoft To Do jaoks
-        </Button>
+        
   
         <List>
           {shoppingList.length === 0 ? (
@@ -71,6 +64,14 @@ import {
             })
           )}
         </List>
+        <Button
+          variant="outlined"
+          onClick={handleDownload}
+          disabled={shoppingList.length === 0}
+          sx={{ mb: 2 }}
+        >
+          Lae alla Microsoft To Do jaoks
+        </Button>
       </>
     );
   }

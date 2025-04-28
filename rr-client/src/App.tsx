@@ -10,8 +10,9 @@ import {
   TextField,
   CircularProgress,
   Button,
-  Grid,
-  Box
+  Card,
+  CardContent,
+  Box,
 } from '@mui/material';
 
 const GET_RECIPES = gql`
@@ -73,61 +74,58 @@ function App() {
         Retseptiraamat 📚
       </Typography>
 
-      {/* Nupud samal real */}
-      <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
-        <Grid item>
-          <Button
-            variant="outlined"
-            onClick={() => setShowAddForm(!showAddForm)}
-          >
-            {showAddForm ? 'Peida vorm' : 'Lisa uus retsept'}
-          </Button>
-        </Grid>
+      
 
-        <Grid item>
-          <Button
-            variant="contained"
-            onClick={handleGenerateShoppingList}
-            disabled={selectedRecipes.length === 0}
-          >
-            Koosta poenimekiri
-          </Button>
-        </Grid>
-      </Grid>
+      <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-start' }}>
+        <Card sx={{ flex: 2, padding: 2 }}>
+          <CardContent>
+            {data.recipes.map((recipe: any) => (
+              <RecipeCard
+                key={recipe.id}
+                recipe={recipe}
+                selected={selectedRecipes.includes(recipe.id)}
+                onToggle={handleSelectRecipe}
+              />
+            ))}
+            <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
+        <Button
+          variant="outlined"
+          onClick={() => setShowAddForm(!showAddForm)}
+        >
+          {showAddForm ? 'Peida vorm' : 'Lisa uus retsept'}
+        </Button>
 
-      {/* Retsepti lisamise vorm */}
+
+      </div>
+
       {showAddForm && <AddRecipeForm />}
+          </CardContent>
+        </Card>
 
-      {/* 2-veeruline layout */}
-      <Grid container spacing={4}>
-        {/* Vasak veerg: retseptid */}
-        <Grid item xs={12} md={8}>
-          {data.recipes.map((recipe: any) => (
-            <RecipeCard
-              key={recipe.id}
-              recipe={recipe}
-              selected={selectedRecipes.includes(recipe.id)}
-              onToggle={handleSelectRecipe}
-            />
-          ))}
-        </Grid>
-
-        {/* Parem veerg: poenimekiri */}
-        <Grid item xs={12} md={4}>
-          <Box sx={{ position: 'sticky', top: 32 }}>
-            <TextField
-              type="number"
-              value={targetServes}
-              onChange={(e) => setTargetServes(Number(e.target.value))}
-              label="Sööjate arv"
-              fullWidth
-              sx={{ my: 2 }}
-            />
-
+        <Card sx={{ flex: 1, padding: 2 }}>
+          <CardContent>
+            <Button
+              variant="contained"
+              onClick={handleGenerateShoppingList}
+              disabled={selectedRecipes.length === 0}
+            >
+              Koosta poenimekiri
+            </Button>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, marginTop: 2, marginBottom: 2 }}>
+              <TextField
+                size="small"
+                type="number"
+                value={targetServes}
+                onChange={(e) => setTargetServes(Number(e.target.value))}
+                sx={{ width: '80px' }}
+                inputProps={{ min: 1 }}
+              />
+              <Typography variant="body2">inimesele</Typography>
+            </Box>
             <ShoppingListSection shoppingList={shoppingList} />
-          </Box>
-        </Grid>
-      </Grid>
+          </CardContent>
+        </Card>
+      </div>
     </Container>
   );
 }
