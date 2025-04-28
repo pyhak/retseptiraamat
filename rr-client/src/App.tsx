@@ -70,9 +70,20 @@ function App() {
 
   return (
     <Container sx={{ mt: 4 }}>
-      <Typography variant="h3" gutterBottom>
-        Retseptiraamat 📚
-      </Typography>
+          <Box 
+      sx={{
+        backgroundColor: '#f7f0e4', 
+        padding: 2,
+        display: 'flex',
+        alignItems: 'left',
+        justifyContent: 'left',
+        boxShadow: 1, 
+        borderRadius: 2,
+        marginBottom: 4,
+      }}
+    >
+      <img src="/retseptiraamat.png" alt="Retseptiraamat logo" style={{ height: '120px' }} />
+    </Box>
 
       
 
