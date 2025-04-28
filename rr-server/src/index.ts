@@ -18,5 +18,6 @@ async function startServer() {
 
 startServer().catch((error) => {
   console.error('💥 Serveri käivitamisel tekkis viga:', error);
+
   process.exit(1);
 });

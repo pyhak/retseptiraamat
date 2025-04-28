@@ -13,49 +13,64 @@ export const typeDefs = gql`
   }
 
   type Ingredient {
-    name: String!
-    amount: String!
-    unit: String!
-    category: String!
-    sortID: Int!
-  }
+  name: String!
+  amount: String
+  unit: String
+  category: String!
+}
 
-  type Recipe {
-    title: String
-    description: String
-    tutorial: String
-    category: String!
-    serves: Int
-    ingredients: [Ingredient]
-    ratings: [Rating]
-    tags: [String]
-    createdAt: String
-    id: ID!
-  }
+input IngredientInput {
+  name: String!
+  amount: String!
+  unit: String!
+  category: String!
+}
 
-  input RecipeInput {
-    title: String!
-    description: String!
-    tutorial: String!
-    serves: Int!
-    ingredients: [IngredientInput!]!
-    category: String!
-    tags: [String!]
-  }
+input NewIngredientInput {
+  name: String!
+  category: String!
+}
 
-  input IngredientInput {
-    name: String!
-    amount: String!
-    unit: String!
-    category: String!
-    sortID: Int!
-  }
+type Recipe {
+  id: ID!
+  title: String!
+  description: String!
+  tutorial: String!
+  serves: Int!
+  ingredients: [Ingredient!]!
+  tags: [String]
+  createdAt: String
+}
 
-  type ShoppingListItem {
-    name: String!
-    totalAmount: Float!
-    unit: String!
-  }
+input RecipeInput {
+  title: String!
+  description: String!
+  tutorial: String!
+  serves: Int!
+  ingredients: [IngredientInput!]!
+  tags: [String!]
+}
+
+ 
+
+  type Category {
+  name: String!
+  sortID: Int!
+}
+
+type Ingredient {
+  name: String!
+  amount: String
+  unit: String
+  category: String
+  sortID: Int
+}
+
+type ShoppingListItem {
+  name: String!
+  totalAmount: Float!
+  unit: String!
+}
 
   input ShoppingListRecipeInput {
     id: ID!
@@ -64,6 +79,9 @@ export const typeDefs = gql`
 
   type Query {
     recipes(query: String, serves: Int): [Recipe]
+    categories: [Category!]!
+    ingredients: [Ingredient!]!
+    sortOrder: [String!]
   }
 
   type Mutation {
@@ -73,5 +91,6 @@ export const typeDefs = gql`
     addRating(title: String!, user: String!, value: RatingValue!): Recipe
     updateRating(title: String!, user: String!, value: RatingValue!): Recipe
     shoppingList(recipes: [ShoppingListRecipeInput!]!): [ShoppingListItem!]!
+    addIngredient(ingredient: NewIngredientInput!): String!
   }
 `;

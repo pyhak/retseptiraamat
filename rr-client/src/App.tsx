@@ -17,22 +17,22 @@ import {
 
 const GET_RECIPES = gql`
   query {
-    recipes {
-      id
-      title
+  recipes {
+    id
+    title
+    description
+    tutorial
+    serves
+    tags
+    createdAt
+    ingredients {
+      name
+      amount
+      unit
       category
-      serves
-      ingredients {
-        name
-        amount
-        unit
-      }
-      ratings {
-        user
-        value
-      }
     }
   }
+}
 `;
 
 const GET_SHOPPING_LIST = gql`

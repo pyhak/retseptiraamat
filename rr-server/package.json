@@ -6,7 +6,7 @@
     "dev": "ts-node-dev src/index.ts",
     "start": "npm run compile && node ./dist/src/index.js",
     "compile": "tsc",
-    "seed": "ts-node-dev src/loadRecipes.ts"
+    "seed": "ts-node-dev src/seed/index.ts"
   },
   "keywords": [],
   "author": "",
