@@ -1,4 +1,4 @@
-import { gql, useMutation, useQuery } from '@apollo/client';
+import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { TextField, Button, Typography, IconButton, Box, Autocomplete, Container, MenuItem, Select } from '@mui/material';
 import { useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
@@ -46,6 +46,23 @@ const GET_RECIPES = gql`
   }
 `;
 
+const GENERATE_RECIPE = gql`
+  query GenerateRecipeFromAI($query: String!, $mock: Boolean) {
+    generateRecipeFromAI(query: $query, mock: $mock) {
+      title
+      description
+      tutorial
+      serves
+      ingredients {
+        name
+        amount
+        unit
+        category
+      }
+    }
+  }
+`;
+
 interface IngredientInput {
   name: string;
   amount: string;
@@ -53,6 +70,25 @@ interface IngredientInput {
   category: string;
   isNew?: boolean;
 }
+
+interface RecipeData {
+  title: string;
+  description: string;
+  tutorial: string;
+  serves: number;
+  ingredients: IngredientInput[];
+}
+
+interface Category {
+  name: string;
+}
+
+interface IngredientData {
+  name: string;
+  category: string;
+}
+
+type PossiblyCachedIngredient = IngredientInput & { __typename?: string };
 
 function AddRecipeForm() {
   const [title, setTitle] = useState('');
@@ -63,15 +99,35 @@ function AddRecipeForm() {
     { name: '', amount: '', unit: '', category: 'Muu', isNew: false }
   ]);
 
-  const { data: categoriesData, loading: categoriesLoading, error: categoriesError } = useQuery(GET_CATEGORIES);
-  const { data: ingredientsData, loading: ingredientsLoading, error: ingredientsError } = useQuery(GET_INGREDIENTS);
-  const { refetch: refetchRecipes } = useQuery(GET_RECIPES); // <-- retseptide uuendamine
+  const { data: categoriesData, loading: categoriesLoading, error: categoriesError } = useQuery<{ categories: Category[] }>(GET_CATEGORIES);
+  const { data: ingredientsData, loading: ingredientsLoading, error: ingredientsError } = useQuery<{ ingredients: IngredientData[] }>(GET_INGREDIENTS);
+  const { refetch: refetchRecipes } = useQuery(GET_RECIPES);
 
   const [addRecipe] = useMutation(ADD_RECIPE);
   const [addIngredient] = useMutation(ADD_INGREDIENT);
 
+  const [prompt, setPrompt] = useState('');
+  const [generateRecipe, { loading: generating }] = useLazyQuery<{ generateRecipeFromAI: RecipeData }>(GENERATE_RECIPE);
+
   if (categoriesLoading || ingredientsLoading) return <p>Laeb andmeid...</p>;
   if (categoriesError || ingredientsError) return <p>Viga andmete laadimisel: {categoriesError?.message || ingredientsError?.message}</p>;
+
+  const handleGenerateRecipe = async () => {
+    try {
+      const { data } = await generateRecipe({ variables: { query: prompt, mock: false } });
+      if (!data?.generateRecipeFromAI) return;
+
+      const recipe = data.generateRecipeFromAI;
+      setTitle(recipe.title);
+      setDescription(recipe.description);
+      setTutorial(recipe.tutorial);
+      setServes(recipe.serves);
+      setIngredients(recipe.ingredients.map((i) => ({ ...i, isNew: false })));
+    } catch (err) {
+      console.error('AI retsepti genereerimine ebaõnnestus:', err);
+      alert('AI genereerimine ebaõnnestus');
+    }
+  };
 
   const handleIngredientChange = (index: number, field: keyof IngredientInput, value: string) => {
     const updated = ingredients.map((ingredient, i) => {
@@ -88,7 +144,7 @@ function AddRecipeForm() {
     const updated = ingredients.map((ingredient, i) => {
       if (i !== index) return ingredient;
 
-      const selectedIngredient = ingredientsData?.ingredients.find((i: { name: string }) => i.name === selectedName);
+      const selectedIngredient = ingredientsData?.ingredients.find((i) => i.name === selectedName);
 
       if (selectedIngredient) {
         return {
@@ -123,7 +179,6 @@ function AddRecipeForm() {
     e.preventDefault();
 
     try {
-      // Kõigepealt salvesta kõik uued koostisosad
       for (const ingredient of ingredients) {
         if (ingredient.isNew && ingredient.name.trim() !== '') {
           await addIngredient({
@@ -137,7 +192,6 @@ function AddRecipeForm() {
         }
       }
 
-      // Seejärel salvesta retsept
       await addRecipe({
         variables: {
           recipe: {
@@ -145,12 +199,11 @@ function AddRecipeForm() {
             description,
             tutorial,
             serves: Number(serves),
-            ingredients: ingredients.map(({ isNew, ...rest }) => rest),
+            ingredients: (ingredients as PossiblyCachedIngredient[]).map(({ __typename, isNew, ...rest }) => rest),
           },
         },
       });
 
-      // Uuenda retseptide nimekirja
       await refetchRecipes();
 
       alert('✅ Retsept lisatud!');
@@ -172,6 +225,20 @@ function AddRecipeForm() {
       </Typography>
 
       <form onSubmit={handleSubmit}>
+        <Box display="flex" gap={2} alignItems="center" marginY={2}>
+          <TextField
+            label="Kirjelda, mida soovid valmistada (nt 'kanafilee karri')"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            fullWidth
+          />
+          <Button onClick={handleGenerateRecipe} variant="outlined" disabled={generating}>
+            {generating ? 'Laeb...' : 'Genereeri AI abil'}
+          </Button>
+        </Box>
+
+        <Typography>Või täida ise.</Typography>
+
         <TextField
           label="Pealkiri"
           value={title}
@@ -186,6 +253,7 @@ function AddRecipeForm() {
           onChange={(e) => setDescription(e.target.value)}
           fullWidth
           margin="normal"
+          multiline
           required
         />
         <TextField
@@ -194,6 +262,7 @@ function AddRecipeForm() {
           onChange={(e) => setTutorial(e.target.value)}
           fullWidth
           margin="normal"
+          multiline
           required
         />
         <TextField
@@ -210,52 +279,59 @@ function AddRecipeForm() {
           Koostisosad
         </Typography>
 
-        {ingredients.map((ingredient, index) => (
-          <Box key={index} display="flex" gap={2} alignItems="center" marginBottom={2} flexWrap="wrap">
-            <Autocomplete
-              value={ingredient.name}
-              onChange={(_e, value) => handleIngredientSelect(index, value || '')}
-              onInputChange={(_e, value) => handleIngredientChange(index, 'name', value)}
-              options={ingredientsData?.ingredients.map((i: { name: string }) => i.name) || []}
-              renderInput={(params) => <TextField {...params} label="Koostisosade nimi" />}
-              fullWidth
-              freeSolo
-            />
-            <TextField
-              label="Kogus"
-              value={ingredient.amount}
-              onChange={(e) => handleIngredientChange(index, 'amount', e.target.value)}
-              required
-            />
-            <TextField
-              label="Ühik"
-              value={ingredient.unit}
-              onChange={(e) => handleIngredientChange(index, 'unit', e.target.value)}
-              required
-            />
-            <Select
-              value={ingredient.category}
-              onChange={(e) => handleIngredientChange(index, 'category', e.target.value)}
-              displayEmpty
-              sx={{ minWidth: 120 }}
-            >
-              {categoriesData?.categories.map((c: { name: string }) => (
-                <MenuItem key={c.name} value={c.name}>
-                  {c.name}
-                </MenuItem>
-              ))}
-            </Select>
-            <IconButton onClick={() => removeIngredientField(index)}>
-              <DeleteIcon />
-            </IconButton>
+        {ingredients.map((ingredient, index) => {
+          const allCategories = categoriesData?.categories.map((c) => c.name) || [];
+          const categoryOptions = allCategories.includes(ingredient.category)
+            ? allCategories
+            : [...allCategories, ingredient.category];
 
-            {ingredient.isNew && (
-              <Typography variant="body2" color="warning.main" sx={{ marginLeft: 1 }}>
-                ⚠️ Uus koostisosa
-              </Typography>
-            )}
-          </Box>
-        ))}
+          return (
+            <Box key={index} display="flex" gap={2} alignItems="center" marginBottom={2} flexWrap="wrap">
+              <Autocomplete
+                value={ingredient.name}
+                onChange={(_e, value) => handleIngredientSelect(index, value || '')}
+                onInputChange={(_e, value) => handleIngredientChange(index, 'name', value)}
+                options={ingredientsData?.ingredients.map((i) => i.name) || []}
+                renderInput={(params) => <TextField {...params} label="Koostisosade nimi" />}
+                fullWidth
+                freeSolo
+              />
+              <TextField
+                label="Kogus"
+                value={ingredient.amount}
+                onChange={(e) => handleIngredientChange(index, 'amount', e.target.value)}
+                required
+              />
+              <TextField
+                label="Ühik"
+                value={ingredient.unit}
+                onChange={(e) => handleIngredientChange(index, 'unit', e.target.value)}
+                required
+              />
+              <Select
+                value={ingredient.category}
+                onChange={(e) => handleIngredientChange(index, 'category', e.target.value)}
+                displayEmpty
+                sx={{ minWidth: 120 }}
+              >
+                {categoryOptions.map((name) => (
+                  <MenuItem key={name} value={name}>
+                    {name}
+                  </MenuItem>
+                ))}
+              </Select>
+              <IconButton onClick={() => removeIngredientField(index)}>
+                <DeleteIcon />
+              </IconButton>
+
+              {ingredient.isNew && (
+                <Typography variant="body2" color="warning.main" sx={{ marginLeft: 1 }}>
+                  ⚠️ Uus koostisosa
+                </Typography>
+              )}
+            </Box>
+          );
+        })}
 
         <Button
           variant="outlined"
@@ -275,3 +351,4 @@ function AddRecipeForm() {
 }
 
 export default AddRecipeForm;
+

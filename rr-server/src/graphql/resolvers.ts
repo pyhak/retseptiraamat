@@ -2,6 +2,8 @@ import { client } from '../elastic';
 import { v4 as uuidv4 } from 'uuid';
 import { convertAmount } from '../utils/unitConversion';
 import { Recipe, RatingValue } from '../types';
+import { generateRecipe } from '../services/openAiService';
+import { mockRecipe } from '../mocks/openAiMock';
 
 export const resolvers = {
   Query: {
@@ -98,7 +100,16 @@ export const resolvers = {
         return [];
       }
     },
+    generateRecipeFromAI: async (_: any, args: { query: string; mock?: boolean }) => {
+      const { query, mock } = args;
 
+      if (mock) {
+        return mockRecipe;
+      }
+
+      const recipe = await generateRecipe(query);
+      return recipe;
+    },
     sortOrder: async () => {
       try {
         const response = await client.search({

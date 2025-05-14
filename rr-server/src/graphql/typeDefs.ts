@@ -82,6 +82,7 @@ type ShoppingListItem {
     categories: [Category!]!
     ingredients: [Ingredient!]!
     sortOrder: [String!]
+    generateRecipeFromAI(query: String!, mock: Boolean): Recipe
   }
 
   type Mutation {
@@ -93,4 +94,5 @@ type ShoppingListItem {
     shoppingList(recipes: [ShoppingListRecipeInput!]!): [ShoppingListItem!]!
     addIngredient(ingredient: NewIngredientInput!): String!
   }
+
 `;
