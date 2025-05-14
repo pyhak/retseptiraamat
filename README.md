@@ -1,121 +1,149 @@
-# 📚 Retseptiraamat
+📚 Retseptiraamat
 
-**Lihtne retseptihaldur ja poenimekirja koostaja**, mis kasutab Reacti, Apollo Clienti, GraphQL API-t ja Elasticsearchi.
+Lihtne retseptihaldur ja poenimekirja koostaja, mis kasutab Reacti, Apollo Clienti, GraphQL API-t, OpenAI generatsiooni ja Elasticsearchi.
 
----
-
-## 🚀 Projekti eesmärk
+🚀 Projekti eesmärk
 
 See projekt on loodud katsetamaks ja rakendamaks:
-- Elasticsearchi andmebaasi otsingu ja salvestuse jaoks
-- GraphQL API ehitamist ja päringute haldamist
-- Reacti ja Material UI kasutajaliidese loomisel
-- Andmete normaliseerimist ja eksporti (nt Microsoft To Do jaoks)
 
----
+🔍 Elasticsearchi andmebaasi otsingu ja salvestuse jaoks
 
-## 🧱 Tehnoloogiad
+🌐 GraphQL API loomist ja tüübiturvalist päringute haldamist
 
-- **React** (Vite projekt)
-- **Apollo Client** (GraphQL päringud)
-- **GraphQL** server
-- **Elasticsearch** (8.x)
-- **Docker** (Elasticsearch ja Kibana konteinerid)
-- **Material UI** (UI komponentide raamistik)
-- **uuid**, **unitConversion**, **categories** (väikesed utility moodulid)
+⚛️ Reacti ja Material UI kasutajaliidest
 
----
+🤖 OpenAI API kasutust retseptide genereerimiseks
 
-## ⚙️ Paigaldamine ja käivitamine
+🧠 Andmete normaliseerimist ja eksporti (nt Microsoft To Do jaoks)
 
-### 1. Kloonimine ja install
+🧱 Tehnoloogiad
 
-```bash
+React (Vite projekt)
+
+Apollo Client (GraphQL päringud)
+
+GraphQL server (Apollo Server)
+
+Elasticsearch (8.x)
+
+Docker (Elasticsearch ja Kibana konteinerid)
+
+Material UI (UI komponentide raamistik)
+
+OpenAI (ChatGPT integratsioon retseptide loomiseks)
+
+uuid, unitConversion, categories (utility moodulid)
+
+⚙️ Paigaldamine ja käivitamine
+
+1. Kloonimine ja install
+
 git clone <repo-url>
 cd retseptiraamat
 npm install
-```
 
-### 2. Elasticsearchi ja Kibana käivitamine Dockeriga
+2. Elasticsearchi ja Kibana käivitamine Dockeriga
 
-Projekti juurest leiad `docker-compose.yml` faili.  
-Käivita konteinerid:
-
-```bash
 docker-compose up -d
-```
 
 See tõstab:
-- **Elasticsearch** üles pordil `9200`
-- **Kibana** üles pordil `5601`
 
-Kasutaja/parool (kui vaja):
-- kasutaja: `elastic`
-- parool: `changeme`
+Elasticsearch üles pordil 9200
 
+Kibana üles pordil 5601
 
-### 3. Frontendi käivitamine
+Vajadusel kasutaja/parool:
 
-```bash
+kasutaja: elastic
+
+parool: changeme
+
+3. .env konfiguratsioon
+
+Elasticsearchi ühenduse jaoks tuleb luua .env fail:
+
+# Elasticsearch serveri aadress (kohalik docker-compose jooksutatud Elasticsearch)
+ELASTICSEARCH_NODE=http://localhost:9200
+
+# Kasutajanimi ja parool Elasticsearchi ühenduseks
+ELASTICSEARCH_USERNAME=elastic
+ELASTICSEARCH_PASSWORD=xxx
+
+Kui kasutad ka OpenAI generatsiooni, lisa:
+
+OPENAI_API_KEY=...
+
+4. Serveri käivitamine ja andmete initsialiseerimine
+
+cd rr-server
+npm install
+
+# Lae esmased andmed Elasticsearchi (kategooriad, koostisosad jne)
+npm run seed
+
+# Käivita GraphQL server
 npm run dev
-```
 
-See avab rakenduse aadressil [http://localhost:3000](http://localhost:3000).
+GraphQL server töötab pordil 4000 ja pakub dokumenteeritud API-t.
 
-### 4. GraphQL server
+5. Frontendi käivitamine
 
-Projekti taustal töötab lihtne GraphQL server:
-- `src/graphql/resolvers.ts`
-- `src/graphql/typeDefs.ts`
+cd rr-client
+npm install
+npm run dev
 
-Peamised päringud ja mutatsioonid:
-- `recipes(query: String, serves: Int)`: otsib retsepte ja kohandab portsjoneid
-- `shoppingList(recipes: [ShoppingListRecipeInput!])`: genereerib poenimekirja
-- `addRecipe(recipe: RecipeInput!)`: lisab uue retsepti
-- `addRating(title: String!, user: String!, value: RatingValue!)`: lisab hinnangu
+Rakendus avaneb aadressil http://localhost:3000.
 
----
+✨ Peamised funktsioonid
 
-## ✨ Peamised funktsioonid
+🔎 Retseptide otsing ja kuvamine Elasticsearchist
 
-- 🔎 **Retseptide otsing ja kuvamine**
-- 👵 **Poenimekirja koostamine valitud retseptide põhjal**
-- 📅 **Microsoft To Do sobiv eksport** (TXT failina)
-- 📝 **Uute retseptide lisamine**
-- 🌟 **Retseptide hinnangute andmine ja uuendamine**
-- 🔄 **Portsjonite arvu dünaamiline kohandamine**
+🤖 AI-põhine retsepti genereerimine OpenAI abil
 
----
+📝 Uute retseptide lisamine vormi kaudu
 
-## 📅 Microsoft To Do eksport
+✅ Uute koostisosade automaatne lisamine
 
-Pärast poenimekirja koostamist saad:
-- Vajutada nuppu **"Lae alla Microsoft To Do jaoks"**
-- Laadida `.txt` faili, kus iga rida on kujul:
+🛒 Poenimekirja koostamine valitud retseptide põhjal
 
-```
+📄 Microsoft To Do eksport .txt failina
+
+🔄 Portsjonite dünaamiline muutmine (nt 2 → 6 inimesele)
+
+🧠 Uute kategooriate automaatne tuvastus ja salvestamine
+
+🧠 OpenAI kasutus
+
+Võimalus sisestada vabas vormis küsimus (nt „kanawok köögiviljadega“), mille põhjal:
+
+OpenAI tagastab JSON-struktuuris retsepti
+
+Rakendus täidab automaatselt pealkirja, õpetuse, koostisosad jne
+
+Uued kategooriad lisatakse Elasticsearchi automaatselt
+
+🧾 Microsoft To Do eksport
+
+Pärast poenimekirja koostamist saad vajutada:
+
+⬇️ Lae alla Microsoft To Do jaoks
+
+Laaditakse .txt fail kujul:
+
 Osta 3 tk Kartulit
 Osta 1 kg Riisi
 Osta 2 prk Tomatikastet
-```
 
-To Do rakenduses saad need lihtsasti ülesannete listiks muuta:
-- *Paste tasks* või *Import file*
+Mis sobib To Do "Paste as tasks" funktsiooniga.
 
----
+📦 Tulevikuplaanid
 
-## 📊 Tuleviku ideed
 
-- [ ] Retsepti muutmise ja kustutamise võimalus
-- [ ] Täiendav otsing filtreerimisega (kategooriate, koostisosade järgi)
-- [ ] Responsive (mobiilisõbralik) vaade
-- [ ] Shopping list grupituna kategooriate järgi (nt "Köögiviljad", "Piimatooted")
-- [ ] CSV ja PDF eksport poenimekirjale
 
----
+📜 Litsents
 
-## 📜 Litsents
+Privaatne projekt õppe- ja katsetamise eesmärgil.
+Võid vabalt kloonida ja edasi arendada.
 
-Privaatne projekt (isiklikuks ja õppimiseesmärgiks).  
-Võib vabalt kasutada ja arendada edasi enda õppe- või hobiotstarbel.
+© 2025 Madis Mätlik
 

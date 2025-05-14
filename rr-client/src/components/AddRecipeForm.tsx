@@ -225,7 +225,7 @@ function AddRecipeForm() {
       </Typography>
 
       <form onSubmit={handleSubmit}>
-        <Box display="flex" gap={2} alignItems="center" marginY={2}>
+      <Box display="flex" gap={2} alignItems="center" marginY={2}>
           <TextField
             label="Kirjelda, mida soovid valmistada (nt 'kanafilee karri')"
             value={prompt}
